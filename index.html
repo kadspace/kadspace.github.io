@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applied AI Engineer | Systems & Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="neural-canvas"></canvas>
+
+    <div class="overlay">
+        <header>
+            <div class="logo">LY.SYS</div>
+            <nav>
+                <a href="#work">Work</a>
+                <a href="#stack">Stack</a>
+                <a href="#contact" class="cta-btn">Connect</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="hero-content">
+                    <p class="status-indicator"><span class="blink">●</span> SYSTEM ONLINE // SAN DIEGO</p>
+                    <h1>Bridging the Gap Between <span class="highlight">Systems</span> & <span class="highlight">Intelligence</span>.</h1>
+                    <p class="sub-headline">I engineer the infrastructure that makes Large Language Models actually useful in production.</p>
+                    <div class="hero-actions">
+                        <button onclick="document.getElementById('work').scrollIntoView({behavior: 'smooth'})">View Deployments</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="work" class="section">
+                <h2>Generated Solutions</h2>
+                <div class="project-grid">
+                    <div class="card">
+                        <h3>RAG Pipeline Orchestrator</h3>
+                        <p>Enterprise-grade document synthesis using LangChain and Pinecone. Reduced query latency by 40%.</p>
+                        <div class="tags"><span>Python</span> <span>FastAPI</span> <span>OpenAI</span></div>
+                    </div>
+                    <div class="card">
+                        <h3>Autonomous Agent Swarm</h3>
+                        <p>Multi-agent system for automated code refactoring and PR reviews.</p>
+                        <div class="tags"><span>AutoGPT</span> <span>Docker</span> <span>Redis</span></div>
+                    </div>
+                    <div class="card">
+                        <h3>Voice-to-Action Bridge</h3>
+                        <p>Real-time whisper translation directly to system commands for IoT devices.</p>
+                        <div class="tags"><span>Whisper</span> <span>C++</span> <span>Edge AI</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="stack" class="section">
+                <h2>Tech Stack</h2>
+                <div class="stack-grid">
+                    <div class="stack-item">Python / TypeScript</div>
+                    <div class="stack-item">PyTorch / TensorFlow</div>
+                    <div class="stack-item">LangChain / Semantic Kernel</div>
+                    <div class="stack-item">Docker / K8s</div>
+                    <div class="stack-item">AWS / GCP</div>
+                    <div class="stack-item">Postgres / Vector DBs</div>
+                </div>
+            </section>
+
+            <section id="contact" class="section">
+                <h2>Initiate Handshake</h2>
+                <p>Looking for a role in San Diego? Let's talk systems.</p>
+                <a href="mailto:example@email.com" class="big-link">hello@ly.sys</a>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2024 // EXECUTION COMPLETE</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
