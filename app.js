@@ -11,8 +11,31 @@ const CONFIG = {
     connectionDistance: 150, // How far to draw lines
     mouseDistance: 250, // Range of mouse influence (the "flashlight")
     baseSpeed: 0.5,
-    color: '0, 255, 157' // The accent RGB value
+    color: { r: 0, g: 255, b: 157 } // Object for dynamic modification
 };
+
+// Scroll Handler for Color Shift
+window.addEventListener('scroll', () => {
+    const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+
+    // Shift from Green (0, 255, 157) -> Electric Yellow (220, 255, 50)
+    // Very subtle shift, keeping the "system ready" vibe
+    CONFIG.color.r = Math.floor(0 + (220 * scrollPercent));
+    CONFIG.color.g = 255; // Stay bright green/yellow
+    CONFIG.color.b = Math.floor(157 - (107 * scrollPercent));  // 157 -> 50
+
+    // Update main accent color in CSS for consistency
+    document.documentElement.style.setProperty('--accent', `rgb(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b})`);
+    document.documentElement.style.setProperty('--accent-glow', `rgba(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b}, 0.2)`);
+
+    // Progressive Blur on Background
+    // Start blurring after a bit of scrolling, max out at bottom
+    // Progressive Blur on Background
+    // Start blurring after a bit of scrolling, max out at bottom
+    // ULTRA REDUCED intensity per user request (8px -> 3px)
+    const blurAmount = Math.min(3, Math.floor(scrollPercent * 5));
+    canvas.style.filter = `blur(${blurAmount}px)`;
+});
 
 // Resize handling
 function resize() {
@@ -61,7 +84,7 @@ class Particle {
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${CONFIG.color}, 0.2)`;
+        ctx.fillStyle = `rgba(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b}, 0.2)`;
         ctx.fill();
     }
 }
@@ -123,7 +146,7 @@ function connectParticles() {
 
                 if (opacity > 0) {
                     ctx.beginPath();
-                    ctx.strokeStyle = `rgba(${CONFIG.color}, ${Math.min(opacity, 0.8)})`; // Cap alpha at 0.8
+                    ctx.strokeStyle = `rgba(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b}, ${Math.min(opacity, 0.8)})`; // Cap alpha at 0.8
                     ctx.lineWidth = isMouseNear ? 1.5 : 0.5; // Thicker lines near mouse
                     ctx.moveTo(p1.x, p1.y);
                     ctx.lineTo(p2.x, p2.y);
@@ -132,6 +155,177 @@ function connectParticles() {
             }
         }
     }
+}
+
+// Toggle Music Section
+function toggleMusic() {
+    const content = document.getElementById('music-content');
+    const header = document.querySelector('.collapsible-header h2');
+
+    if (content.style.maxHeight) {
+        content.style.maxHeight = null;
+        header.innerText = "[+] Creative Subroutines";
+        content.style.opacity = 0;
+    } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+        header.innerText = "[-] Creative Subroutines";
+        content.style.opacity = 1;
+    }
+}
+
+// Header Scroll Logic
+const header = document.querySelector('header');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+});
+
+// Custom Audio Player Logic
+const audio = document.getElementById('audio-source');
+const playBtn = document.getElementById('play-btn');
+const progressBar = document.getElementById('progress-fill');
+const progressBarBg = document.querySelector('.progress-bar-bg');
+const currentTimeEl = document.getElementById('current-time');
+const durationEl = document.getElementById('duration');
+const volIcon = document.getElementById('vol-icon');
+const volBarBg = document.querySelector('.vol-bar-bg');
+const volFill = document.getElementById('vol-fill');
+
+let isDragging = false;
+let isVolDragging = false;
+
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+if (playBtn && audio && progressBarBg) {
+    // Play/Pause
+    playBtn.addEventListener('click', () => {
+        if (audio.paused) {
+            audio.play().then(() => {
+                playBtn.classList.add('is-playing');
+            }).catch(e => console.error("Playback failed:", e));
+        } else {
+            audio.pause();
+            playBtn.classList.remove('is-playing');
+        }
+    });
+
+    // Default state: ensure it's not playing initially
+    playBtn.classList.remove('is-playing');
+
+    // Metadata loaded (duration)
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.innerText = formatTime(audio.duration);
+    });
+
+    // Update Progress & Time
+    audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            if (!isDragging) {
+                progressBar.style.width = `${percent}%`;
+            }
+            currentTimeEl.innerText = formatTime(audio.currentTime);
+        }
+    });
+
+    // Scrubbing Logic
+    function updateScrub(e) {
+        const rect = progressBarBg.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        let percent = clickX / rect.width;
+        percent = Math.max(0, Math.min(1, percent)); // Clamp between 0 and 1
+
+        if (audio.duration) {
+            audio.currentTime = percent * audio.duration;
+            progressBar.style.width = `${percent * 100}%`;
+        }
+    }
+
+    progressBarBg.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        updateScrub(e); // Seek immediately on click
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            e.preventDefault(); // Prevent text selection
+            updateScrub(e);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+        }
+    });
+
+    // Reset on end
+    audio.addEventListener('ended', () => {
+        playBtn.classList.remove('is-playing');
+        progressBar.style.width = '0%';
+        audio.currentTime = 0;
+    });
+
+    // Volume Logic
+    function updateVolume(e) {
+        const rect = volBarBg.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        let percent = clickX / rect.width;
+        percent = Math.max(0, Math.min(1, percent));
+
+        audio.volume = percent;
+        volFill.style.width = `${percent * 100}%`;
+
+        // Update icon based on level
+        if (percent === 0) {
+            volIcon.classList.add('is-muted');
+        } else {
+            volIcon.classList.remove('is-muted');
+        }
+    }
+
+    volBarBg.addEventListener('mousedown', (e) => {
+        isVolDragging = true;
+        updateVolume(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            updateScrub(e);
+        }
+        if (isVolDragging) {
+            e.preventDefault();
+            updateVolume(e);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDragging) isDragging = false;
+        if (isVolDragging) isVolDragging = false;
+    });
+
+    // Mute toggle
+    let lastVol = 1;
+    volIcon.addEventListener('click', () => {
+        if (audio.volume > 0) {
+            lastVol = audio.volume;
+            audio.volume = 0;
+            volFill.style.width = '0%';
+            volIcon.classList.add('is-muted');
+        } else {
+            audio.volume = lastVol;
+            volFill.style.width = `${lastVol * 100}%`;
+            volIcon.classList.remove('is-muted');
+        }
+    });
 }
 
 // Start
