@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Applied AI Engineer | Systems & Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@400;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <canvas id="neural-canvas"></canvas>
+    <div class="vignette"></div>
 
     <div class="overlay">
         <header>
-            <div class="logo">LY.SYS</div>
+            <div class="logo">KAD.SPACE</div>
             <nav>
                 <a href="#work">Work</a>
                 <a href="#stack">Stack</a>
@@ -25,11 +30,20 @@
         <main>
             <section class="hero">
                 <div class="hero-content">
-                    <p class="status-indicator"><span class="blink">●</span> SYSTEM ONLINE // SAN DIEGO</p>
-                    <h1>Bridging the Gap Between <span class="highlight">Systems</span> & <span class="highlight">Intelligence</span>.</h1>
-                    <p class="sub-headline">I engineer the infrastructure that makes Large Language Models actually useful in production.</p>
-                    <div class="hero-actions">
-                        <button onclick="document.getElementById('work').scrollIntoView({behavior: 'smooth'})">View Deployments</button>
+                    <p class="status-indicator"><span class="blink">●</span> ONLINE // SAN DIEGO</p>
+                    <h1>Applied AI Engineer</h1>
+                    <p class="sub-headline">Bridging the gap between <strong>Enterprise Systems</strong> and
+                        <strong>Large Language Models</strong>.
+                    </p>
+
+                    <a href="https://aws.amazon.com/certification/certified-ai-practitioner/" target="_blank"
+                        class="cert-badge">
+                        <span class="icon">☁️</span> AWS AI Certified Practitioner
+                    </a>
+
+                    <div class="hero-actions" style="margin-top: 2rem;">
+                        <button
+                            onclick="document.getElementById('work').scrollIntoView({behavior: 'smooth'})">Initialize</button>
                     </div>
                 </div>
             </section>
@@ -37,40 +51,97 @@
             <section id="work" class="section">
                 <h2>Generated Solutions</h2>
                 <div class="project-grid">
-                    <div class="card">
-                        <h3>RAG Pipeline Orchestrator</h3>
-                        <p>Enterprise-grade document synthesis using LangChain and Pinecone. Reduced query latency by 40%.</p>
-                        <div class="tags"><span>Python</span> <span>FastAPI</span> <span>OpenAI</span></div>
-                    </div>
-                    <div class="card">
-                        <h3>Autonomous Agent Swarm</h3>
-                        <p>Multi-agent system for automated code refactoring and PR reviews.</p>
-                        <div class="tags"><span>AutoGPT</span> <span>Docker</span> <span>Redis</span></div>
-                    </div>
-                    <div class="card">
-                        <h3>Voice-to-Action Bridge</h3>
-                        <p>Real-time whisper translation directly to system commands for IoT devices.</p>
-                        <div class="tags"><span>Whisper</span> <span>C++</span> <span>Edge AI</span></div>
-                    </div>
+                    <a href="https://github.com/kadspace/remindr" target="_blank" class="card">
+                        <h3>Remindr // Android</h3>
+                        <p>Next-gen personal organizer. Bridges natural language (Voice/Text) to structured calendar
+                            events using Groq's LPU inference.</p>
+                        <p class="sub-text">"Google Keep + Calendar, but intelligent."</p>
+                        <div class="tags"><span>Android/Kotlin</span> <span>Groq API</span> <span>JSON Schema</span>
+                        </div>
+                    </a>
+                    <a href="https://github.com/kadspace/llmcpu" target="_blank" class="card">
+                        <h3>Bare Metal LLM</h3>
+                        <p>CPU-based Large Language Model inference engine built from scratch. A deep dive into matrix
+                            multiplication and transformer architecture.</p>
+                        <p class="sub-text">Demonstrating low-level system understanding beyond API calls.</p>
+                        <div class="tags"><span>C++</span> <span>Quantization</span> <span>Systems</span></div>
+                    </a>
                 </div>
             </section>
 
             <section id="stack" class="section">
                 <h2>Tech Stack</h2>
                 <div class="stack-grid">
-                    <div class="stack-item">Python / TypeScript</div>
-                    <div class="stack-item">PyTorch / TensorFlow</div>
-                    <div class="stack-item">LangChain / Semantic Kernel</div>
-                    <div class="stack-item">Docker / K8s</div>
-                    <div class="stack-item">AWS / GCP</div>
-                    <div class="stack-item">Postgres / Vector DBs</div>
+                    <div class="stack-item">Android / Kotlin</div>
+                    <div class="stack-item">LPU / Groq API</div>
+                    <div class="stack-item">Python / Systems</div>
+                    <div class="stack-item">LangChain / RAG</div>
+                    <div class="stack-item">Docker / CI/CD</div>
+                    <div class="stack-item">Logic / Math</div>
+                </div>
+            </section>
+
+            <section id="interests" class="section">
+                <h2>Interests & Audio</h2>
+                <div class="custom-player">
+                    <div class="album-art">
+                        <img src="img.png" alt="Cover Art">
+                    </div>
+                    <div class="player-controls">
+                        <div class="song-info">
+                            <span class="song-title">Creative_Draft__FINAL.wav</span>
+                            <span class="artist">System Audio</span>
+                        </div>
+                        <div class="controls-row">
+                            <button id="play-btn">
+                                <svg class="icon-play" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <svg class="icon-pause" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                                    stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="6" y="4" width="4" height="16"></rect>
+                                    <rect x="14" y="4" width="4" height="16"></rect>
+                                </svg>
+                            </button>
+
+                            <span id="current-time">0:00</span>
+                            <div class="progress-bar-bg">
+                                <div id="progress-fill" class="progress-fill"></div>
+                            </div>
+                            <span id="duration">0:00</span>
+
+                            <div class="volume-controls">
+                                <div id="vol-icon" class="vol-icon">
+                                    <svg class="icon-speaker" viewBox="0 0 24 24" width="24" height="24"
+                                        stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                    </svg>
+                                    <svg class="icon-mute" viewBox="0 0 24 24" width="24" height="24"
+                                        stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                        <line x1="23" y1="9" x2="17" y2="15"></line>
+                                        <line x1="17" y1="9" x2="23" y2="15"></line>
+                                    </svg>
+                                </div>
+                                <div class="vol-bar-bg">
+                                    <div id="vol-fill" class="vol-fill" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Hidden audio element source -->
+                    <audio id="audio-source" src="audio.mp3"></audio>
                 </div>
             </section>
 
             <section id="contact" class="section">
                 <h2>Initiate Handshake</h2>
                 <p>Looking for a role in San Diego? Let's talk systems.</p>
-                <a href="mailto:example@email.com" class="big-link">hello@ly.sys</a>
+                <a href="mailto:kad.space.contact@gmail.com" class="big-link">kad.space.contact@gmail.com</a>
             </section>
         </main>
 
@@ -79,6 +150,9 @@
         </footer>
     </div>
 
+
+
     <script src="app.js"></script>
 </body>
+
 </html>
