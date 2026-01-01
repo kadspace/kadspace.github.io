@@ -2,160 +2,315 @@ const canvas = document.getElementById('neural-canvas');
 const ctx = canvas.getContext('2d');
 
 let width, height;
-let particles = [];
-let mouse = { x: null, y: null };
+let grid = [];
+const GRID_COLS = 28; // MNIST style
+const GRID_ROWS = 28;
+let CELL_SIZE = 20;
+let gridOffsetX = 0;
+let gridOffsetY = 0;
 
-// Configuration for the effect
-const CONFIG = {
-    particleCount: 100, // Density
-    connectionDistance: 150, // How far to draw lines
-    mouseDistance: 250, // Range of mouse influence (the "flashlight")
-    baseSpeed: 0.5,
-    color: { r: 0, g: 255, b: 157 } // Object for dynamic modification
+// Digits 0-9 (5x7 bitmaps, centered in 28x28 later)
+// 1 = filled, 0 = empty
+const DIGIT_BITMAPS = {
+    0: [
+        [0, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 1, 1], // slight variation
+        [1, 0, 1, 0, 1],
+        [1, 1, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 0]
+    ],
+    1: [
+        [0, 0, 1, 0, 0],
+        [0, 1, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 1, 1, 1, 0]
+    ],
+    2: [
+        [0, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [0, 0, 0, 0, 1],
+        [0, 0, 0, 1, 0],
+        [0, 0, 1, 0, 0],
+        [0, 1, 0, 0, 0],
+        [1, 1, 1, 1, 1]
+    ],
+    3: [
+        [1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 1],
+        [0, 0, 0, 1, 0],
+        [0, 0, 1, 1, 0],
+        [0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 0]
+    ],
+    4: [
+        [0, 0, 0, 1, 0],
+        [0, 0, 1, 1, 0],
+        [0, 1, 0, 1, 0],
+        [1, 0, 0, 1, 0],
+        [1, 1, 1, 1, 1],
+        [0, 0, 0, 1, 0],
+        [0, 0, 0, 1, 0]
+    ],
+    5: [
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 0]
+    ],
+    6: [
+        [0, 1, 1, 1, 0],
+        [1, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0],
+        [1, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 0]
+    ],
+    7: [
+        [1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 1],
+        [0, 0, 0, 1, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0]
+    ],
+    8: [
+        [0, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 0]
+    ],
+    9: [
+        [0, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 1],
+        [0, 1, 1, 1, 0]
+    ]
 };
 
-// Scroll Handler for Color Shift
+// Configuration
+const CONFIG = {
+    color: { r: 0, g: 255, b: 157 },
+    predictionInterval: 3000, // New digit every 3s
+    fadeSpeed: 0.05
+};
+
+// State
+let lastPredictionTime = 0;
+let currentDigit = -1;
+let phase = 'noise'; // 'noise', 'resolve', 'hold', 'fade'
+
+// Scroll Handler for Color Shift (kept from original)
 window.addEventListener('scroll', () => {
     const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-
-    // Shift from Green (0, 255, 157) -> Electric Yellow (220, 255, 50)
-    // Very subtle shift, keeping the "system ready" vibe
     CONFIG.color.r = Math.floor(0 + (220 * scrollPercent));
-    CONFIG.color.g = 255; // Stay bright green/yellow
-    CONFIG.color.b = Math.floor(157 - (107 * scrollPercent));  // 157 -> 50
-
-    // Update main accent color in CSS for consistency
+    CONFIG.color.g = 255;
+    CONFIG.color.b = Math.floor(157 - (107 * scrollPercent));
     document.documentElement.style.setProperty('--accent', `rgb(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b})`);
     document.documentElement.style.setProperty('--accent-glow', `rgba(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b}, 0.2)`);
 
-    // Progressive Blur on Background
-    // Start blurring after a bit of scrolling, max out at bottom
-    // Progressive Blur on Background
-    // Start blurring after a bit of scrolling, max out at bottom
-    // ULTRA REDUCED intensity per user request (8px -> 3px)
+    // Blur effect
     const blurAmount = Math.min(3, Math.floor(scrollPercent * 5));
     canvas.style.filter = `blur(${blurAmount}px)`;
 });
 
-// Resize handling
+class Cell {
+    constructor(c, r) {
+        this.c = c;
+        this.r = r;
+        this.value = 0; // Current opacity/intensity
+        this.targetValue = 0;
+    }
+
+    update() {
+        // Smoothly interpolate towards target
+        this.value += (this.targetValue - this.value) * CONFIG.fadeSpeed;
+        if (Math.abs(this.targetValue - this.value) < 0.01) this.value = this.targetValue;
+    }
+
+    draw(xOffset, yOffset, size) {
+        if (this.value < 0.05) return; // Optimize
+
+        const x = xOffset + this.c * size;
+        const y = yOffset + this.r * size;
+        const padding = size * 0.1; // Gap between squares
+
+        // Increased opacity base from 0.4 to 0.6
+        ctx.fillStyle = `rgba(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b}, ${this.value * 0.6})`;
+        ctx.fillRect(x + padding, y + padding, size - padding * 2, size - padding * 2);
+
+        // Brighter core
+        if (this.value > 0.5) {
+            ctx.fillStyle = `rgba(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b}, ${this.value * 0.9})`;
+            ctx.fillRect(x + padding + 2, y + padding + 2, size - padding * 2 - 4, size - padding * 2 - 4);
+        }
+    }
+}
+
+function initGrid() {
+    console.log("Initializing Grid Animation System"); // Debug
+    grid = [];
+    for (let r = 0; r < GRID_ROWS; r++) {
+        for (let c = 0; c < GRID_COLS; c++) {
+            grid.push(new Cell(c, r));
+        }
+    }
+}
+
 function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = width;
     canvas.height = height;
-    initParticles();
+
+    // Position grid on the right side
+    // We want roughly 30-40% of the screen width for the grid, usually on the right
+    // Let's make it responsive.
+
+    // On wide screens, put it on the right.
+    // On mobile, maybe center it?
+
+    if (width > 768) {
+        // Desktop: Right side vertical centered
+        CELL_SIZE = Math.min(width * 0.4 / GRID_COLS, height * 0.6 / GRID_ROWS);
+        CELL_SIZE = Math.max(CELL_SIZE, 10); // Minimum size
+        gridOffsetX = width * 0.65; // Start at 65% width
+        gridOffsetY = (height - (GRID_ROWS * CELL_SIZE)) / 2;
+    } else {
+        // Mobile: Background, centered, fade out more?
+        CELL_SIZE = Math.min(width * 0.8 / GRID_COLS, height * 0.5 / GRID_ROWS);
+        gridOffsetX = (width - (GRID_COLS * CELL_SIZE)) / 2;
+        gridOffsetY = height * 0.2;
+    }
 }
 
-window.addEventListener('resize', resize);
-
-// Mouse tracking
-window.addEventListener('mousemove', (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
+window.addEventListener('resize', () => {
+    resize();
+    initGrid(); // Re-init to be safe (though not strictly necessary if just resizing)
 });
 
-window.addEventListener('mouseleave', () => {
-    mouse.x = null;
-    mouse.y = null;
-});
+function getDigitTarget(digit) {
+    // Return 28x28 array of target values
+    // Map 5x7 bitmap to center of 28x28
+    const map = new Array(GRID_ROWS * GRID_COLS).fill(0);
+    if (digit === -1) return map; // Empty
 
-// Particle Class
-class Particle {
-    constructor() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.vx = (Math.random() - 0.5) * CONFIG.baseSpeed;
-        this.vy = (Math.random() - 0.5) * CONFIG.baseSpeed;
-        this.size = Math.random() * 2 + 1;
+    const bitmap = DIGIT_BITMAPS[digit];
+    const bitmapH = bitmap.length;
+    const bitmapW = bitmap[0].length;
+
+    const startRow = Math.floor((GRID_ROWS - bitmapH) / 2);
+    const startCol = Math.floor((GRID_COLS - bitmapW) / 2);
+
+    for (let r = 0; r < bitmapH; r++) {
+        for (let c = 0; c < bitmapW; c++) {
+            if (bitmap[r][c] === 1) {
+                const targetIndex = (startRow + r) * GRID_COLS + (startCol + c);
+                map[targetIndex] = 1;
+            }
+        }
     }
-
-    update() {
-        this.x += this.vx;
-        this.y += this.vy;
-
-        // Bounce off edges
-        if (this.x < 0 || this.x > width) this.vx *= -1;
-        if (this.y < 0 || this.y > height) this.vy *= -1;
-
-        // Mouse repulsion/attraction (optional - here we just use mouse for "lighting" lines)
-        // Adding a slight drift away from mouse could be cool, but let's keep it simple for now.
-    }
-
-    draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b}, 0.2)`;
-        ctx.fill();
-    }
+    return map;
 }
 
-function initParticles() {
-    particles = [];
-    // Adjust count based on screen size
-    const count = (width * height) / 15000; // Density heuristic
-    for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
-    }
-}
-
-// Main Animation Loop
-function animate() {
+function animate(timestamp) {
     ctx.clearRect(0, 0, width, height);
 
-    // Update and draw particles
-    particles.forEach(p => {
-        p.update();
-        p.draw();
-    });
+    // Logic Loop
+    if (timestamp - lastPredictionTime > CONFIG.predictionInterval) {
+        // New Cycle
+        lastPredictionTime = timestamp;
+        currentDigit = Math.floor(Math.random() * 10);
 
-    // Draw lines
-    connectParticles();
+        // Reset grid target to "noise" first?
+        // Let's do: Current -> Fade -> Noise -> New Digit
+        // Actually simple: Just set new target.
+        // But to make it look like "predicting", let's add some noise.
+    }
+
+    // Manage Phases based on time within interval
+    const progress = (timestamp - lastPredictionTime) / CONFIG.predictionInterval;
+
+    // 0.0 - 0.2: Fade out previous / Noise
+    // 0.2 - 0.5: Form shape (Prediction)
+    // 0.5 - 0.9: Hold
+    // 0.9 - 1.0: Fade out
+
+    let targetMap;
+
+    if (progress < 0.2) {
+        // Noise Phase: Random static
+        grid.forEach(cell => {
+            if (Math.random() < 0.1) cell.targetValue = Math.random() * 0.5;
+            else cell.targetValue = 0;
+        });
+    } else if (progress < 0.8) {
+        // Target Phase
+        const targets = getDigitTarget(currentDigit); // This is inefficient to call every frame? No, it's small.
+        // Optimization: Calculate targets once per cycle.
+        // For now, let's just calculate index.
+
+        const bitmap = DIGIT_BITMAPS[currentDigit];
+        const bitmapH = bitmap.length;
+        const bitmapW = bitmap[0].length;
+        const startRow = Math.floor((GRID_ROWS - bitmapH) / 2);
+        const startCol = Math.floor((GRID_COLS - bitmapW) / 2);
+
+        grid.forEach(cell => {
+            // Default 0
+            let t = 0;
+            // Check if inside digit map
+            if (cell.r >= startRow && cell.r < startRow + bitmapH &&
+                cell.c >= startCol && cell.c < startCol + bitmapW) {
+                if (bitmap[cell.r - startRow][cell.c - startCol]) {
+                    t = 1;
+                }
+            }
+
+            // Add "Probabilistic" noise around the digit
+            // Cells near the digit might flicker
+            if (t === 0 && Math.random() < 0.005) t = 0.3; // Stray pixels
+
+            cell.targetValue = t;
+        });
+    } else {
+        // Fade out
+        grid.forEach(cell => cell.targetValue = 0);
+    }
+
+    // Update and Draw
+    grid.forEach(cell => {
+        cell.update();
+        cell.draw(gridOffsetX, gridOffsetY, CELL_SIZE);
+    });
 
     requestAnimationFrame(animate);
 }
 
-function connectParticles() {
-    for (let i = 0; i < particles.length; i++) {
-        for (let j = i; j < particles.length; j++) {
-            let p1 = particles[i];
-            let p2 = particles[j];
+// Init
+initGrid();
+resize();
+requestAnimationFrame(animate);
 
-            let dx = p1.x - p2.x;
-            let dy = p1.y - p2.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < CONFIG.connectionDistance) {
-                // Base opacity based on proximity to each other
-                let opacity = 1 - (distance / CONFIG.connectionDistance);
-
-                // Mouse Interaction: "Heatmap" effect
-                // If the connection is within range of the mouse, it glows brighter and potentially changes color/width
-                let isMouseNear = false;
-                if (mouse.x != null) {
-                    let mdx = mouse.x - p1.x; // Proximity to p1
-                    let mdy = mouse.y - p1.y;
-                    let mouseDist = Math.sqrt(mdx * mdx + mdy * mdy);
-
-                    if (mouseDist < CONFIG.mouseDistance) {
-                        isMouseNear = true;
-                        // Boost opacity significantly if near mouse
-                        // The closer the mouse, the stronger the boost
-                        opacity += (1 - (mouseDist / CONFIG.mouseDistance)) * 1.5;
-                    }
-                }
-
-                if (opacity > 0) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(${CONFIG.color.r}, ${CONFIG.color.g}, ${CONFIG.color.b}, ${Math.min(opacity, 0.8)})`; // Cap alpha at 0.8
-                    ctx.lineWidth = isMouseNear ? 1.5 : 0.5; // Thicker lines near mouse
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.stroke();
-                }
-            }
-        }
-    }
-}
+// ----------------------------------------------------------------
+// EXISTING UI LOGIC (Music, Scroll sticky, etc.) - KEPT INTACT
+// ----------------------------------------------------------------
 
 // Toggle Music Section
 function toggleMusic() {
@@ -327,7 +482,3 @@ if (playBtn && audio && progressBarBg) {
         }
     });
 }
-
-// Start
-resize();
-animate();
