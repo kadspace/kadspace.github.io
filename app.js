@@ -14,9 +14,21 @@ const CONFIG = {
     color: { r: 0, g: 255, b: 157 } // Object for dynamic modification
 };
 
-// Scroll Handler for Color Shift
+// Scroll Handler for Color Shift and Header Status
 window.addEventListener('scroll', () => {
     const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    const header = document.querySelector('header');
+    const heroSection = document.querySelector('.hero');
+
+    // Show/hide header status indicator when scrolling past hero
+    if (heroSection) {
+        const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+        if (window.scrollY > heroBottom - 100) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    }
 
     // Shift from Green (0, 255, 157) -> Electric Yellow (220, 255, 50)
     // Very subtle shift, keeping the "system ready" vibe
