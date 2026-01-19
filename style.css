@@ -293,12 +293,37 @@ h2 {
     text-decoration: none;
     color: inherit;
     display: block;
+    position: relative;
     /* Ensure clicks work on whole card */
 }
 
 .card:hover {
     border-color: var(--accent);
     transform: translateY(-5px);
+}
+
+.card-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.card-disabled:hover {
+    border-color: rgba(255, 255, 255, 0.05);
+    transform: none;
+}
+
+.construction-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 165, 0, 0.2);
+    border: 1px solid rgba(255, 165, 0, 0.5);
+    color: #ffa500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
 .card h3 {
