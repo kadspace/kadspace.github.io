@@ -54,8 +54,8 @@
                         </div>
                     </div>
                     <h1>Data Engineer</h1>
-                    <p class="sub-headline">Building reliable <strong>AWS data pipelines</strong> and
-                        <strong>production systems</strong> with Python, SQL, and automation.
+                    <p class="sub-headline">Building <strong>Python + SQL data pipelines</strong> for
+                        <strong>AWS-backed systems</strong>, warehouse workflows, and serverless ingestion.
                     </p>
 
                     <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
@@ -73,47 +73,57 @@
             <section id="work" class="section">
                 <h2>Projects</h2>
                 <div class="project-grid">
-                    <a href="https://github.com/kadspace/remindr" target="_blank" class="card">
-                        <h3>Remindr // Android</h3>
-                        <p>Next-gen personal organizer. Bridges natural language (Voice/Text) to structured calendar
-                            events using Groq's LPU inference.</p>
-                        <p class="sub-text">"Google Keep + Calendar, but intelligent."</p>
-                        <div class="tags"><span>Android/Kotlin</span> <span>Groq API</span> <span>JSON Schema</span>
+                    <a href="https://github.com/kadspace/aws-ingestion" target="_blank" class="card">
+                        <h3>aws-ingestion // AWS + Terraform</h3>
+                        <p>Serverless ingestion pipeline for simulated machine telemetry. EventBridge triggers a
+                            generator Lambda, SQS buffers readings, and a writer Lambda persists each event to DynamoDB.</p>
+                        <p class="sub-text">High-severity readings can trigger Discord alerts using a webhook stored in Secrets Manager.</p>
+                        <div class="tags"><span>Python</span> <span>AWS</span> <span>Terraform</span> <span>Lambda</span>
+                            <span>SQS</span> <span>DynamoDB</span> <span>Secrets Manager</span>
                         </div>
                     </a>
-                    <div class="card card-disabled">
-                        <div class="construction-badge">🚧 Under Construction</div>
-                        <h3>Bare Metal LLM</h3>
-                        <p>CPU-based Large Language Model inference engine built from scratch. A deep dive into matrix
-                            multiplication and transformer architecture.</p>
-                        <p class="sub-text">Demonstrating low-level system understanding beyond API calls.</p>
-                        <div class="tags"><span>C / C++</span> <span>Quantization</span> <span>Systems</span></div>
-                    </div>
-                    <div class="card card-disabled">
-                        <div class="construction-badge">🚧 Under Construction</div>
-                        <h3>Whirlpool</h3>
-                        <p>Audio effect plugin built in Rust. Exploring real-time DSP and audio processing at the system level.</p>
-                        <p class="sub-text">Bridging music production with low-level programming.</p>
-                        <div class="tags"><span>Rust</span> <span>Audio DSP</span> <span>VST</span></div>
-                    </div>
+                    <a href="https://github.com/kadspace/leetcode_journal" target="_blank" class="card">
+                        <h3>leetcode_journal // Python + SQL</h3>
+                        <p>Practice archive organized by problem patterns, with Python solutions, SQL reps, notes, and
+                            review prompts for building a consistent problem-solving loop.</p>
+                        <p class="sub-text">Less about streaks, more about leaving a useful trail of attempts and decisions.</p>
+                        <div class="tags"><span>Python</span> <span>SQL</span> <span>Patterns</span>
+                            <span>Notes</span>
+                        </div>
+                    </a>
+                    <a href="https://github.com/kadspace/remindr" target="_blank" class="card">
+                        <h3>Remindr // Groq</h3>
+                        <p>Natural-language reminder prototype that turns voice or text into structured calendar events
+                            using Groq inference and JSON schema output.</p>
+                        <p class="sub-text">Kept here because it shows practical LLM API work without making it the whole story.</p>
+                        <div class="tags"><span>Groq API</span> <span>LLM APIs</span> <span>JSON Schema</span>
+                            <span>Mobile Prototype</span>
+                        </div>
+                    </a>
                 </div>
             </section>
-
             <section id="stack" class="section">
                 <h2>Tech Stack</h2>
                 <div class="stack-grid">
-                    <div class="stack-item">Android / Kotlin</div>
-                    <div class="stack-item">C / C++</div>
                     <div class="stack-item">Python</div>
+                    <div class="stack-item">SQL</div>
+                    <div class="stack-item">Terraform</div>
+                    <div class="stack-item">AWS Lambda</div>
+                    <div class="stack-item">Amazon S3</div>
+                    <div class="stack-item">Amazon SQS</div>
+                    <div class="stack-item">EventBridge</div>
+                    <div class="stack-item">DynamoDB</div>
+                    <div class="stack-item">Redshift</div>
+                    <div class="stack-item">Glue Data Catalog</div>
                     <div class="stack-item">Groq / LLM APIs</div>
-                    <div class="stack-item">AWS (Glue, Redshift, Step Functions)</div>
-                    <div class="stack-item">Jupyter / SageMaker</div>
                 </div>
             </section>
-
             <section id="about" class="section">
                 <h2>About Me</h2>
-                <p style="color: var(--text-dim); margin-bottom: 2rem; max-width: 600px;">My main hobby is making music, here's a sample</p>
+                <p style="color: var(--text-dim); margin-bottom: 1rem; max-width: 760px;">I've spent the last six years as a software developer doing data engineering work: maintaining Python and SQL pipelines around a loan accounting platform, plus warehouse support and migration work.</p>
+                <p style="color: var(--text-dim); margin-bottom: 1rem; max-width: 760px;">Day to day, I'm closest to Python, SQL, S3, Lambda, Redshift, and the Glue Data Catalog. Lately I've also been building small AWS projects end-to-end with Terraform, including a serverless ingestion pipeline with EventBridge, SQS, DynamoDB, and Secrets Manager.</p>
+                <p style="color: var(--text-dim); margin-bottom: 2rem; max-width: 760px;">I code with AI tools as part of my workflow, mostly to move faster on implementation details, debugging, and documentation while still understanding and owning the final code.</p>
+                <p style="color: var(--text-dim); margin-bottom: 2rem; max-width: 600px;">Outside of work, I make music. Here's a sample.</p>
                 <div class="custom-player">
                     <div class="album-art">
                         <img src="img.png" alt="Cover Art">
